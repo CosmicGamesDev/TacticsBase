@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dyqjwhtn5x0jo"]
+
+[ext_resource type="Texture2D" uid="uid://cqgl3cge8drtd" path="res://path.png" id="1_h0181"]
+
+[node name="PathHighlight" type="Sprite2D"]
+texture = ExtResource("1_h0181")
