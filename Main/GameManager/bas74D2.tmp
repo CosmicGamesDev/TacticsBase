@@ -506,7 +506,7 @@ unique_name_in_owner = true
 [node name="PlayerGroup" type="Node2D" parent="LevelGenerator/Units"]
 
 [node name="BaseUnit" parent="LevelGenerator/Units/PlayerGroup" groups=["player_unit"] instance=ExtResource("3_060px")]
-position = Vector2(64, 32)
+position = Vector2(48, 32)
 offset = Vector2(4, 4)
 
 [node name="BaseUnit2" parent="LevelGenerator/Units/PlayerGroup" groups=["player_unit"] instance=ExtResource("3_060px")]

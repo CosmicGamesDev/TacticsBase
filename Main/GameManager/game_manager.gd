@@ -9,14 +9,20 @@ extends Node2D
 @onready var walkable = %Walkable
 @onready var map = %Map
 
+
 var path_points := PackedVector2Array()
 
-@export var current_unit : BaseUnit
-
+var current_unit : BaseUnit
+var player_units = []
+var enemy_units = []
+var current_unit_index = 0
 
 const DIRECTIONS = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
 
 func _ready():
+	enemy_units = get_tree().get_nodes_in_group("enemy_unit")
+	player_units = get_tree().get_nodes_in_group("player_unit")
+	current_unit = player_units[current_unit_index]
 	a_star_grid.region = map.get_used_rect()
 	a_star_grid.cell_size = Vector2(8,8)
 	a_star_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
@@ -57,6 +63,7 @@ func move_to_location():
 			path_points = PackedVector2Array()
 			current_unit.mode = BaseUnit.State.ATTACK
 			current_unit.animation_player.play("Idle")
+			current_unit.has_moved = true
 			attack_mode()
 
 func _flood_fill(cell: Vector2i, max_distance: int) -> Array:
@@ -77,8 +84,6 @@ func _flood_fill(cell: Vector2i, max_distance: int) -> Array:
 		array.append(current)
 		for direction in DIRECTIONS:
 			var coordinates: Vector2i = current + direction
-			#if is_occupied(coordinates):
-				#continue
 			if coordinates in array:
 				continue
 			if !walkable_points.has(coordinates):
@@ -89,12 +94,18 @@ func _flood_fill(cell: Vector2i, max_distance: int) -> Array:
 func attack_mode():
 	current_unit.attack_icon.show()
 	var attack_tiles = _flood_fill(current_unit.global_position/8, current_unit.attack_range)
+	var index = attack_tiles.find(current_unit.global_position as Vector2i/8)
+	attack_tiles.pop_at(index)
 	for tile in attack_tiles:
 		attack_map.set_cell(0,tile,0,Vector2(0,0))
 	current_unit.mode = BaseUnit.State.ATTACK
 
 func move_mode():
 	var walkable_tiles = _flood_fill(current_unit.global_position/8, current_unit.move_range)
+	for unit in enemy_units:
+		var index = walkable_tiles.find(unit.global_position as Vector2i/8)
+		if index != -1:
+			walkable_tiles.pop_at(index)
 	for tile in walkable_tiles:
 		walkable.set_cell(0,tile,0,Vector2(0,0))
 	current_unit.mode = BaseUnit.State.MOVE
@@ -103,7 +114,7 @@ func draw_path():
 	path.clear()
 	var mouse_location = get_global_mouse_position() as Vector2i/Vector2i(8,8)
 	if walkable.get_used_cells(0).has(mouse_location):
-		var path_points = a_star_grid.get_point_path(current_unit.global_position/Vector2(8,8),mouse_location)
+		path_points = a_star_grid.get_point_path(current_unit.global_position/Vector2(8,8),mouse_location)
 		for point in path_points:
 			path.set_cell(0,point/8,0,Vector2i(0,0),0)
 
@@ -117,5 +128,23 @@ func draw_attack_icon():
 func unit_attack():
 	attack_map.clear()
 	current_unit.attack_icon.hide()
-	print('attack')
+	current_unit.has_attacked = true
+	if current_unit.has_attacked && current_unit.has_moved && current_unit_index < player_units.size() - 1:
+		current_unit_index += 1
+		current_unit = player_units[current_unit_index]
+		move_mode()
+	else: 
+		$"../AIGameManager".start()
+
+
+func reset_player_units():
+	for unit in player_units:
+		unit.has_moved = false
+		unit.has_attacked = false
+		
+
+func start():
+	current_unit_index = 0
+	current_unit = player_units[current_unit_index]
 	move_mode()
+

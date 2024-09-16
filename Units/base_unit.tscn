@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://dgtsu5xfby23b" path="res://Assets/Minifantasy_Creatures_v3.2_Commercial_Version/Minifantasy_Creatures_Assets/Base_Humanoids/Goblin/GoblinIdle.png" id="1_6xfwg"]
 [ext_resource type="Texture2D" uid="uid://c0u5eh1kh81x2" path="res://Assets/Minifantasy_Creatures_v3.2_Commercial_Version/Minifantasy_Creatures_Assets/Base_Humanoids/Goblin/GoblinWalk.png" id="1_dakhy"]
-[ext_resource type="Script" path="res://base_unit.gd" id="2_lgqlr"]
+[ext_resource type="Script" path="res://Units/base_unit.gd" id="2_lgqlr"]
 [ext_resource type="Texture2D" uid="uid://beujg2dkxj3gl" path="res://target_tile.png" id="4_72d7q"]
 
 [sub_resource type="Animation" id="Animation_i41cc"]
@@ -172,5 +172,6 @@ libraries = {
 autoplay = "Idle"
 
 [node name="AttackIcon" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("4_72d7q")
 centered = false
