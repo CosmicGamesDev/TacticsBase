@@ -19,3 +19,8 @@ enum State { MOVE, ATTACK }
 func reset_unit_turn():
 	has_attacked = false
 	has_moved = false
+
+
+
+func _on_animation_player_animation_finished(anim_name):
+	pass # Replace with function body.

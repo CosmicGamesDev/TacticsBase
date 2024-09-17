@@ -58,14 +58,18 @@ func get_closest_enemy():
 				distance_to_enemy = current_unit.global_position.distance_squared_to(enemy.global_position)
 				closest_enemy = enemy
 		var closest_tile = null
-		var walkable_tiles = _flood_fill(current_unit.global_position/8, current_unit.move_range)
+		var walkable_tiles = _flood_fill(current_unit.global_position/Vector2(8,8), current_unit.move_range)
 		for unit in player_units:
 			var index = walkable_tiles.find(unit.global_position as Vector2i/8)
 			if index != -1:
 				walkable_tiles.pop_at(index)
+		for unit in enemy_units:
+			var index = walkable_tiles.find(unit.global_position as Vector2i/ Vector2i(8,8))
+			if index != -1 && current_unit.global_position != unit.global_position:
+				walkable_tiles.pop_at(index)
 		for tile in walkable_tiles:
-			if closest_tile == null || (closest_enemy.global_position/8).distance_squared_to(tile) < \
-			(closest_enemy.global_position/8).distance_squared_to(closest_tile):
+			if closest_tile == null || (closest_enemy.global_position/ Vector2(8,8)).distance_squared_to(tile) < \
+			(closest_enemy.global_position/ Vector2(8,8)).distance_squared_to(closest_tile):
 				closest_tile = tile
 		if walkable_tiles.has(closest_tile):
 			path_points = a_star_grid.get_point_path(current_unit.global_position/Vector2(8,8),closest_tile)
@@ -73,7 +77,7 @@ func get_closest_enemy():
 
 func move_tween(pos, unit):
 	var tween = create_tween()
-	tween.tween_property(unit, "global_position", pos, 0.2)
+	await tween.tween_property(unit, "global_position", pos, 0.2)
 
 func enemy_move():
 	current_unit.mode = BaseUnit.State.MOVE
@@ -81,11 +85,13 @@ func enemy_move():
 
 
 func enemy_attack():
-	var attack_tiles = _flood_fill(current_unit.global_position/8, current_unit.attack_range)
-	var index = attack_tiles.find(current_unit.global_position as Vector2i/8)
+	var attack_tiles = _flood_fill(current_unit.global_position/Vector2(8,8), current_unit.attack_range)
+	var index = attack_tiles.find(current_unit.global_position as Vector2i/ Vector2i(8,8))
 	attack_tiles.pop_at(index)
-	if attack_tiles.has(closest_enemy.global_position as Vector2i/8):
-		print('attack')
+	if attack_tiles.has(closest_enemy.global_position as Vector2i/ Vector2i(8,8)):
+		current_unit.animation_player.play("attack")
+		await current_unit.animation_player.animation_finished
+		current_unit.animation_player.play("Idle")
 	current_unit.mode = BaseUnit.State.ATTACK
 	$"../GameManager".start()
 

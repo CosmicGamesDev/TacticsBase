@@ -47,7 +47,7 @@ func _process(delta):
 
 func move_tween(pos, unit):
 	var tween = create_tween()
-	tween.tween_property(unit, "global_position", pos, 0.2)
+	await tween.tween_property(unit, "global_position", pos, 0.2)
 
 func move_to_location():
 	walkable.clear()
@@ -64,6 +64,7 @@ func move_to_location():
 			current_unit.mode = BaseUnit.State.ATTACK
 			current_unit.animation_player.play("Idle")
 			current_unit.has_moved = true
+			await get_tree().create_timer(.1).timeout
 			attack_mode()
 
 func _flood_fill(cell: Vector2i, max_distance: int) -> Array:
@@ -106,6 +107,10 @@ func move_mode():
 		var index = walkable_tiles.find(unit.global_position as Vector2i/8)
 		if index != -1:
 			walkable_tiles.pop_at(index)
+	for unit in player_units:
+		var index = walkable_tiles.find(unit.global_position as Vector2i/8)
+		if index != -1 && current_unit.global_position/Vector2(8,8) != unit.global_position/Vector2(8,8):
+			walkable_tiles.pop_at(index)
 	for tile in walkable_tiles:
 		walkable.set_cell(0,tile,0,Vector2(0,0))
 	current_unit.mode = BaseUnit.State.MOVE
@@ -129,6 +134,9 @@ func unit_attack():
 	attack_map.clear()
 	current_unit.attack_icon.hide()
 	current_unit.has_attacked = true
+	current_unit.animation_player.play("attack")
+	await current_unit.animation_player.animation_finished
+	current_unit.animation_player.play("Idle")
 	if current_unit.has_attacked && current_unit.has_moved && current_unit_index < player_units.size() - 1:
 		current_unit_index += 1
 		current_unit = player_units[current_unit_index]
