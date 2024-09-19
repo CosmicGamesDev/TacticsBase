@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://kghdto20fkm5"]
+
+[ext_resource type="Texture2D" uid="uid://c1kr82hafpgo5" path="res://hp_icon.png" id="1_vtjkr"]
+
+[node name="HpIcon" type="Sprite2D"]
+texture = ExtResource("1_vtjkr")

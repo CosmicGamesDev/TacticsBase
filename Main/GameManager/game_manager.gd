@@ -16,15 +16,17 @@ var current_unit : BaseUnit
 var player_units = []
 var enemy_units = []
 var current_unit_index = 0
+var cell_size = Vector2i(8,8)
 
 const DIRECTIONS = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
 
 func _ready():
+	SignalBus.unit_died.connect(on_unit_died)
 	enemy_units = get_tree().get_nodes_in_group("enemy_unit")
 	player_units = get_tree().get_nodes_in_group("player_unit")
 	current_unit = player_units[current_unit_index]
 	a_star_grid.region = map.get_used_rect()
-	a_star_grid.cell_size = Vector2(8,8)
+	a_star_grid.cell_size = cell_size
 	a_star_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 	a_star_grid.update()
 	#map.set_cell(0,global_position/8,0,Vector2(0,0))
@@ -32,18 +34,24 @@ func _ready():
 
 func _input(event):
 	if event.is_action_pressed('click') and current_unit.mode == BaseUnit.State.MOVE:
-		var mouse_location = get_global_mouse_position()/Vector2(8,8) as Vector2i
+		var mouse_location = get_global_mouse_position() as Vector2i/cell_size
 		if walkable.get_used_cells(0).has(mouse_location):
-			path_points = a_star_grid.get_point_path(current_unit.global_position/Vector2(8,8),mouse_location)
+			path_points = a_star_grid.get_point_path(current_unit.global_position as Vector2i/cell_size,mouse_location)
 			move_to_location()
 	if event.is_action_pressed('click') and current_unit.mode == BaseUnit.State.ATTACK:
-		var mouse_location = get_global_mouse_position()/Vector2(8,8) as Vector2i
+		var mouse_location = get_global_mouse_position() as Vector2i/cell_size
 		if attack_map.get_used_cells(0).has(mouse_location):
-			unit_attack()
+			unit_attack(mouse_location)
 
 func _process(delta):
 	draw_path()
 	draw_attack_icon()
+
+func on_unit_died(unit):
+	enemy_units = get_tree().get_nodes_in_group("enemy_unit")
+	enemy_units.erase(unit)
+	if enemy_units == []:
+		print('win')
 
 func move_tween(pos, unit):
 	var tween = create_tween()
@@ -103,13 +111,14 @@ func attack_mode():
 
 func move_mode():
 	var walkable_tiles = _flood_fill(current_unit.global_position/8, current_unit.move_range)
-	for unit in enemy_units:
-		var index = walkable_tiles.find(unit.global_position as Vector2i/8)
-		if index != -1:
-			walkable_tiles.pop_at(index)
+	if enemy_units != null:
+		for unit in enemy_units:
+			var index = walkable_tiles.find(unit.global_position as Vector2i/8)
+			if index != -1:
+				walkable_tiles.pop_at(index)
 	for unit in player_units:
 		var index = walkable_tiles.find(unit.global_position as Vector2i/8)
-		if index != -1 && current_unit.global_position/Vector2(8,8) != unit.global_position/Vector2(8,8):
+		if index != -1 && (current_unit.global_position as Vector2i)/cell_size != (unit.global_position as Vector2i)/cell_size:
 			walkable_tiles.pop_at(index)
 	for tile in walkable_tiles:
 		walkable.set_cell(0,tile,0,Vector2(0,0))
@@ -117,24 +126,31 @@ func move_mode():
 
 func draw_path():
 	path.clear()
-	var mouse_location = get_global_mouse_position() as Vector2i/Vector2i(8,8)
+	var mouse_location = get_global_mouse_position() as Vector2i/cell_size
 	if walkable.get_used_cells(0).has(mouse_location):
-		path_points = a_star_grid.get_point_path(current_unit.global_position/Vector2(8,8),mouse_location)
+		path_points = a_star_grid.get_point_path(current_unit.global_position as Vector2i/cell_size,mouse_location)
 		for point in path_points:
 			path.set_cell(0,point/8,0,Vector2i(0,0),0)
 
 func draw_attack_icon():
-	var mouse_location = get_global_mouse_position() as Vector2i/Vector2i(8,8)
+	var mouse_location = get_global_mouse_position() as Vector2i/cell_size
 	if attack_map.get_used_cells(0).has(mouse_location):
 		current_unit.attack_icon.global_position = Vector2i( 
 			roundi(mouse_location.x) * 8,
 			roundi(mouse_location.y) * 8)
 
-func unit_attack():
+func unit_attack(mouse_location):
 	attack_map.clear()
+	for enemy_unit in enemy_units:
+		if enemy_unit.global_position as Vector2i/cell_size == mouse_location:
+			enemy_unit.take_damage(current_unit.attack_damage)
 	current_unit.attack_icon.hide()
 	current_unit.has_attacked = true
 	current_unit.animation_player.play("attack")
+	if current_unit.global_position.x/8 > mouse_location.x:
+		current_unit.flip_h = true
+	else:
+		current_unit.flip_h = false
 	await current_unit.animation_player.animation_finished
 	current_unit.animation_player.play("Idle")
 	if current_unit.has_attacked && current_unit.has_moved && current_unit_index < player_units.size() - 1:

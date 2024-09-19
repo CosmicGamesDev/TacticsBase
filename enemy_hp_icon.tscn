@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bi6t1tr48v75v"]
+
+[ext_resource type="Texture2D" uid="uid://dnxtuorxyt6fh" path="res://enemy_hp_icon.png" id="1_fai47"]
+
+[node name="EnemyHpIcon" type="Sprite2D"]
+texture = ExtResource("1_fai47")
