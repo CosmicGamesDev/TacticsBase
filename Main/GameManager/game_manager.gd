@@ -157,8 +157,10 @@ func unit_attack(mouse_location):
 		current_unit_index += 1
 		current_unit = player_units[current_unit_index]
 		move_mode()
-	else: 
-		$"../AIGameManager".start()
+	else:
+		enemy_units = get_tree().get_nodes_in_group("enemy_unit")
+		if enemy_units != []:
+			$"../AIGameManager".start()
 
 
 func reset_player_units():
