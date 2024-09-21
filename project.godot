@@ -21,8 +21,8 @@ SignalBus="*res://SignalBus.gd"
 
 [display]
 
-window/size/viewport_width=256
-window/size/viewport_height=144
+window/size/viewport_width=224
+window/size/viewport_height=126
 window/stretch/mode="viewport"
 window/stretch/scale_mode="integer"
 window/vsync/vsync_mode=0

@@ -171,6 +171,10 @@ func reset_player_units():
 
 func start():
 	current_unit_index = 0
-	current_unit = player_units[current_unit_index]
-	move_mode()
+	player_units = get_tree().get_nodes_in_group("player_unit")
+	if player_units == []:
+		print("lose")
+	else:
+		current_unit = player_units[current_unit_index]
+		move_mode()
 

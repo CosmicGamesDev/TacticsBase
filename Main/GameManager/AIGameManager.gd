@@ -87,13 +87,18 @@ func enemy_move():
 func enemy_attack():
 	var attack_tiles = _flood_fill(current_unit.global_position/Vector2(8,8), current_unit.attack_range)
 	var index = attack_tiles.find(current_unit.global_position as Vector2i/ Vector2i(8,8))
+	current_unit.mode = BaseUnit.State.ATTACK
 	attack_tiles.pop_at(index)
 	if attack_tiles.has(closest_enemy.global_position as Vector2i/ Vector2i(8,8)):
 		current_unit.animation_player.play("attack")
+		closest_enemy.take_damage(current_unit.attack_damage)
 		await current_unit.animation_player.animation_finished
 		current_unit.animation_player.play("Idle")
-	current_unit.mode = BaseUnit.State.ATTACK
-	$"../GameManager".start()
+	player_units = get_tree().get_nodes_in_group("player_unit")
+	if player_units == []:
+		print("Lose")
+	else:
+		$"../GameManager".start()
 
 func _flood_fill(cell: Vector2i, max_distance: int) -> Array:
 	var array := []
