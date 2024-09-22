@@ -29,7 +29,10 @@ func _ready():
 	a_star_grid.update()
 
 func start():
-	current_unit = enemy_units[0]
+	current_unit_index = 0
+	player_units = get_tree().get_nodes_in_group("player_unit")
+	enemy_units = get_tree().get_nodes_in_group("enemy_unit")
+	current_unit = enemy_units[current_unit_index]
 	enemy_move()
 
 func move_to_location():
@@ -97,6 +100,10 @@ func enemy_attack():
 	player_units = get_tree().get_nodes_in_group("player_unit")
 	if player_units == []:
 		print("Lose")
+	elif current_unit_index < enemy_units.size() - 1:
+		current_unit_index += 1
+		current_unit = enemy_units[current_unit_index]
+		enemy_move()
 	else:
 		$"../GameManager".start()
 
