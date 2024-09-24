@@ -8,6 +8,7 @@ extends Node2D
 @onready var a_star_grid = AStarGrid2D.new()
 @onready var walkable = %Walkable
 @onready var map = %Map
+@onready var lose_screen_scene = preload("res://UI/lose_screen.tscn")
 
 var path_points := PackedVector2Array()
 var closest_enemy = null
@@ -99,7 +100,8 @@ func enemy_attack():
 		current_unit.animation_player.play("Idle")
 	player_units = get_tree().get_nodes_in_group("player_unit")
 	if player_units == []:
-		print("Lose")
+		var lose_screen = lose_screen_scene.instantiate()
+		get_tree().root.add_child(lose_screen)
 	elif current_unit_index < enemy_units.size() - 1:
 		current_unit_index += 1
 		current_unit = enemy_units[current_unit_index]

@@ -1,17 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://cbl8xow7vswg6"]
+[gd_scene load_steps=4 format=3 uid="uid://b16riw6qx35xe"]
 
-[ext_resource type="Script" path="res://UI/screen_base.gd" id="1_nsjf6"]
-[ext_resource type="Theme" uid="uid://b2smyo0srpxje" path="res://Theme/basic.tres" id="1_y2bug"]
-[ext_resource type="FontFile" uid="uid://co22qnqk2cbvh" path="res://Theme/m3x6.ttf" id="2_rbqgn"]
+[ext_resource type="Script" path="res://UI/screen_base.gd" id="1_rt77k"]
+[ext_resource type="Theme" uid="uid://b2smyo0srpxje" path="res://Theme/basic.tres" id="2_f6k52"]
+[ext_resource type="FontFile" uid="uid://co22qnqk2cbvh" path="res://Theme/m3x6.ttf" id="3_514m7"]
 
-[node name="ScreenBase" type="Control"]
+[node name="LoseScreen" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_nsjf6")
+script = ExtResource("1_rt77k")
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 1
@@ -26,7 +26,7 @@ offset_right = 40.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_y2bug")
+theme = ExtResource("2_f6k52")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
@@ -35,7 +35,7 @@ offset_top = 8.0
 offset_right = 72.0
 offset_bottom = 28.0
 size_flags_vertical = 0
-theme = ExtResource("1_y2bug")
+theme = ExtResource("2_f6k52")
 theme_override_constants/separation = -6
 alignment = 1
 
@@ -48,13 +48,13 @@ offset_bottom = -9.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 0
-theme = ExtResource("1_y2bug")
+theme = ExtResource("2_f6k52")
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 1
 theme_override_constants/shadow_outline_size = 3
-theme_override_fonts/font = ExtResource("2_rbqgn")
+theme_override_fonts/font = ExtResource("3_514m7")
 theme_override_font_sizes/font_size = 32
-text = "You Win"
+text = "You Lose"
 horizontal_alignment = 1
 vertical_alignment = 1

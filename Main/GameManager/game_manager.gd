@@ -8,6 +8,7 @@ extends Node2D
 @onready var a_star_grid = AStarGrid2D.new()
 @onready var walkable = %Walkable
 @onready var map = %Map
+@onready var win_screen_scene = preload("res://UI/screen_base.tscn")
 
 
 var path_points := PackedVector2Array()
@@ -51,7 +52,8 @@ func on_unit_died(unit):
 	enemy_units = get_tree().get_nodes_in_group("enemy_unit")
 	enemy_units.erase(unit)
 	if enemy_units == []:
-		print('win')
+		var win_screen = win_screen_scene.instantiate()
+		get_tree().root.add_child(win_screen)
 
 func move_tween(pos, unit):
 	var tween = create_tween()
